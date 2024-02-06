@@ -41,5 +41,27 @@ def split_column(df, column_name, keyword, file_path):
 df = pd.read_csv("/Users/mahi/Documents/therapeutic-companion-bot/data/parquet_files/train-00000-of-00001-01391a60ef5c00d9.csv")
 split_column(df, "text", "<ASSISTANT>", "/Users/mahi/Documents/therapeutic-companion-bot/data/parquet_files/train-00000-of-00001-01391a60ef5c00d9.csv")
 # %%
-df.head(5)
+def remove_string(df, column_name, string_to_remove, file_path):
+    """
+    This function removes a particular string from all rows in a column.
+
+    Parameters:
+    df (pd.DataFrame): The DataFrame
+    column_name (str): The name of the column
+    string_to_remove (str): The string to remove
+
+    Returns:
+    pd.DataFrame: The DataFrame with the string removed
+    """
+    try:
+        df[column_name] = df[column_name].str.replace(string_to_remove, '')
+        df.to_csv(file_path, index=False)
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+# %%
+df = pd.read_csv("/Users/mahi/Documents/therapeutic-companion-bot/data/parquet_files/train-of-00001.csv")
+remove_string(df, "instruction", "### Instruction:", "/Users/mahi/Documents/therapeutic-companion-bot/data/parquet_files/train-of-00001.csv")
+remove_string(df, "instruction", "\n", "/Users/mahi/Documents/therapeutic-companion-bot/data/parquet_files/train-of-00001.csv")
+remove_string(pd.read_csv("/Users/mahi/Documents/therapeutic-companion-bot/data/parquet_files/train-00000-of-00001.csv"), "<s>[INST]")
 # %%
