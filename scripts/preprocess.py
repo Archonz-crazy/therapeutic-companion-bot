@@ -1,67 +1,26 @@
 #%%
 # Imports
 import pandas as pd
-import os
 
 #%%
-def convert_parquet_to_csv(directory):
-    try:
-        for filename in os.listdir(directory):
-            if filename.endswith(".parquet"):
-                df = pd.read_parquet(os.path.join(directory, filename))
-                df.to_csv(os.path.join(directory, filename[:-8] + '.csv'), index=False)
-        print("All parquet files have been converted to CSV.")
-    except Exception as e:
-        print(f"Error: {e}")
-# %%
+# Converting all the parquet files to CSV
+from utils import convert_parquet_to_csv
+from utils import split_column
+from utils import remove_string
+from utils import concat_csv
+
 convert_parquet_to_csv("/Users/mahi/Documents/therapeutic-companion-bot/data/parquet_files")
 # %%
-def split_column(df, column_name, keyword, file_path):
-    """
-    This function splits a column in a DataFrame into two at a certain keyword,
-    deletes the original column, and saves the DataFrame back to the same CSV file.
+# Now that we have all the CSV files, we preprocess them according to their specifications
 
-    Parameters:
-    df (pd.DataFrame): The DataFrame
-    column_name (str): The name of the column to split
-    keyword (str): The keyword at which to split the column
-    file_path (str): The path of the CSV file
-
-    Returns:
-    None
-    """
-    try:
-        df[[f'{column_name}_1', f'{column_name}_2']] = df[column_name].str.split(keyword, expand=True)
-        df = df.drop(columns=[column_name])
-        df.to_csv(file_path, index=False)
-        print(f"DataFrame successfully saved to {file_path}")
-    except Exception as e:
-        print(f"Error: {e}")
+# Concatenating p1 and p2 as they are similar
+concat_csv("../data/parquet_files/csv/p1.csv","../data/parquet_files/csv/p2.csv", "../data/parquet_files/csv/p1_p2.csv")
 # %%
-df = pd.read_csv("/Users/mahi/Documents/therapeutic-companion-bot/data/parquet_files/train-00000-of-00001-01391a60ef5c00d9.csv")
-split_column(df, "text", "<ASSISTANT>", "/Users/mahi/Documents/therapeutic-companion-bot/data/parquet_files/train-00000-of-00001-01391a60ef5c00d9.csv")
-# %%
-def remove_string(df, column_name, string_to_remove, file_path):
-    """
-    This function removes a particular string from all rows in a column.
+# Splitting p5 into two columns
+df = pd.read_csv("/Users/mahi/Documents/therapeutic-companion-bot/data/parquet_files/csv/p5.csv")
+#%%
+df = split_column(df, "text", "<ASSISTANT>: ", "../data/parquet_files/csv/p5.csv")
 
-    Parameters:
-    df (pd.DataFrame): The DataFrame
-    column_name (str): The name of the column
-    string_to_remove (str): The string to remove
-
-    Returns:
-    pd.DataFrame: The DataFrame with the string removed
-    """
-    try:
-        df[column_name] = df[column_name].str.replace(string_to_remove, '')
-        df.to_csv(file_path, index=False)
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
 # %%
-df = pd.read_csv("/Users/mahi/Documents/therapeutic-companion-bot/data/parquet_files/train-of-00001.csv")
-remove_string(df, "instruction", "### Instruction:", "/Users/mahi/Documents/therapeutic-companion-bot/data/parquet_files/train-of-00001.csv")
-remove_string(df, "instruction", "\n", "/Users/mahi/Documents/therapeutic-companion-bot/data/parquet_files/train-of-00001.csv")
-remove_string(pd.read_csv("/Users/mahi/Documents/therapeutic-companion-bot/data/parquet_files/train-00000-of-00001.csv"), "<s>[INST]")
+remove_string(df, "text_1", "<HUMAN>: ", "../data/parquet_files/csv/p5.csv")
 # %%
