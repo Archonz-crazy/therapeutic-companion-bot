@@ -18,19 +18,29 @@ def convert_parquet_to_csv(directory):
     except Exception as e:
         print(f"Error: {e}")
 # %%
-def split_column(df, column_name, keyword, file_path):
+def split_column(path, column_name, keyword, file_path):
     try:
-        df[[f'{column_name}_1', f'{column_name}_2']] = df[column_name].str.split(keyword, expand=True)
-        df = df.drop(columns=[column_name])
+        df = pd.read_csv(path)
+        df[['question', 'response']] = df[column_name].str.split(keyword, expand=True)
+        df.drop(column_name, axis=1, inplace=True)
         df.to_csv(file_path, index=False)
-        print(f"DataFrame successfully saved to {file_path}")
-        return df
     except Exception as e:
         print(f"Error: {e}")
-
-# %%
-def remove_string(df, column_name, string_to_remove, file_path):
+        return None
+#%%
+def remove_string(path, column_name, string_to_remove, file_path):
     try:
+        df = pd.read_csv(path)
+        # Check if column_name is a valid column in df
+        if column_name not in df.columns:
+            print(f"Error: {column_name} is not a valid column in the DataFrame")
+            return None
+
+        # Check if the column contains None values
+        if df[column_name].isnull().any():
+            print(f"Error: {column_name} contains None values")
+            return None
+
         df[column_name] = df[column_name].str.replace(string_to_remove, '')
         df.to_csv(file_path, index=False)
     except Exception as e:
@@ -48,4 +58,22 @@ def concat_csv(file_path1, file_path2, output_file_path):
     except Exception as e:
         print(f"Error: {e}")
 
+# %%
+def drop_col(file_path, col_name):
+    try:
+        df = pd.read_csv(file_path)
+        df.drop(col_name, axis=1, inplace=True)
+        df.to_csv(file_path, index=False)
+        print(f"Column {col_name} successfully dropped from {file_path}")
+    except Exception as e:
+        print(f"Error: {e}")
+# %%
+def remove_lines(path, col_name, string):
+    try:
+        df = pd.read_csv(path)
+        filtered_df = df[df[col_name].str.contains("\[/INST\]", na=False)] 
+        filtered_df.to_csv(path, index=False)
+        print(f"Lines containing {string} successfully removed from {path}")
+    except Exception as e:
+        print(f"Error: {e}")
 # %%
