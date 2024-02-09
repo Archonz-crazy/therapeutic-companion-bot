@@ -82,18 +82,16 @@ def remove_lines(path, col_name, string):
     except Exception as e:
         print(f"Error: {e}")
 # %%
-def rename_col(path, col1, col2):
+def rename_col(path, col_replace, new_col):
     try:
         # Read the CSV file into a DataFrame
         df = pd.read_csv(path)
-        print(df.head())
 
         # using the rename() method 
-        #df.rename(columns = {col_replace : new_col}, inplace = True) 
-        df.columns = [col1, col2]
+        df.rename(columns = {col_replace : new_col}, inplace = True) 
+        #df.columns = [col1, col2]
         print("Replace success.")
         
-        print(df.head())
         # Write the DataFrame back to the CSV file
         df.to_csv(path, index=False)
     except Exception as e:
@@ -117,3 +115,19 @@ def concat_csv_list(file_list, path):
 
 
 # %%
+def json_to_csv(file_path, output_file_path):
+    try:
+        df = pd.read_json(file_path)
+        df.to_csv(output_file_path, index=False)
+        print(f"JSON file successfully converted to CSV and saved to {output_file_path}")
+    except Exception as e:
+        print(f"Error: {e}")
+# %%
+def drop_columns(file_path, columns):
+    try:
+        df = pd.read_csv(file_path)
+        df.drop(columns, axis=1, inplace=True)
+        df.to_csv(file_path, index=False)
+        print(f"Columns {columns} successfully dropped from {file_path}")
+    except Exception as e:
+        print(f"Error: {e}")

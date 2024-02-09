@@ -9,6 +9,8 @@ from utils import drop_col
 from utils import remove_lines
 from utils import rename_col
 from utils import concat_csv_list
+from utils import json_to_csv
+from utils import drop_columns
 #%%
 # Converting all the parquet files to CSV
 convert_parquet_to_csv("../data/parquet_files")
@@ -45,11 +47,11 @@ remove_string("../data/parquet_files/csv/p8.csv", "instruction", "### Response:"
 #Concat p5 and p7 csv files
 concat_csv("../data/parquet_files/csv/p5.csv","../data/parquet_files/csv/p7.csv", "../data/parquet_files/csv/p5_p7.csv")
 # %%
-#rename_col("../data/parquet_files/csv/p8.csv", "instruction", "Question")
-#rename_col("../data/parquet_files/csv/p8.csv", "output", "Response")
+rename_col("../data/parquet_files/csv/p8.csv", "instruction", "Question")
+rename_col("../data/parquet_files/csv/p8.csv", "output", "Response")
 
 # %%
-rename_col("../data/parquet_files/csv/p8.csv", "Question", "Response")
+#rename_col("../data/parquet_files/csv/p8.csv", "Question", "Response")
 
 # %%
 #Concat p5_p7, and p8 csv files
@@ -64,5 +66,20 @@ concat_csv_list(['../data/TypesDisease/adhd.csv', '../data/TypesDisease/asperger
                     '../data/TypesDisease/depression.csv', '../data/TypesDisease/ocd.csv', 
                     '../data/TypesDisease/ptsd.csv'], "../data/TypesDisease/")
 
-
+#%%
+# Drop columns which felt unnecessary
+columns_to_drop = ['author', 'created_utc', 'id', 'num_comments', 'score', 'upvote_ratio', 'url']
+drop_col("../data/TypesDisease/all_types.csv", columns_to_drop)
+# %%
+# Dropping some columns from the mental_disorders_reddit.csv
+columns_to_drop = ['created_utc', "over_18"]
+drop_col("../data/TypesDisease/mental_disorders_reddit.csv", columns_to_drop)
+# %%
+# Reoroderingand renaming all_types.csv
+rename_col("../data/TypesDisease/all_types.csv", "body", "selftext")
+df = pd.read_csv("../data/TypesDisease/all_types.csv")
+df = df[['title', 'selftext', 'subreddit']]
+df.to_csv("../data/TypesDisease/all_types.csv", index=False)
+# %%
+concat_csv("../data/TypesDisease/all_types.csv", "../data/TypesDisease/mental_disorders_reddit.csv", "../data/TypesDisease/all_types.csv")
 # %%
