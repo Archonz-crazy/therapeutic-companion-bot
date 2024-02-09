@@ -60,7 +60,7 @@ concat_csv("../data/parquet_files/csv/p5_p7.csv","../data/parquet_files/csv/p8.c
 
 # %%
 #Start with CSV
-concat_csv_list = (['../data/TypesDisease/adhd.csv, ../data/TypesDisease/aspergers.csv', 
+concat_csv_list(['../data/TypesDisease/adhd.csv', '../data/TypesDisease/aspergers.csv', 
                     '../data/TypesDisease/depression.csv', '../data/TypesDisease/ocd.csv', 
                     '../data/TypesDisease/ptsd.csv'], "../data/TypesDisease/")
 
