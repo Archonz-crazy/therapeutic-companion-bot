@@ -9,8 +9,8 @@ from utils import drop_col
 from utils import remove_lines
 from utils import rename_col
 from utils import concat_csv_list
-from utils import json_to_csv
 from utils import drop_columns
+from utils import json_to_csv
 #%%
 # Converting all the parquet files to CSV
 convert_parquet_to_csv("../data/parquet_files")
@@ -81,5 +81,38 @@ df = pd.read_csv("../data/TypesDisease/all_types.csv")
 df = df[['title', 'selftext', 'subreddit']]
 df.to_csv("../data/TypesDisease/all_types.csv", index=False)
 # %%
+#concating all_types csv with mental_disorders_reddit csv file
 concat_csv("../data/TypesDisease/all_types.csv", "../data/TypesDisease/mental_disorders_reddit.csv", "../data/TypesDisease/all_types.csv")
 # %%
+#renaming mental_health_FAQ csv file's column name
+rename_col("../data/QA_sample/mental_health_conversation - Mental_Health_FAQ.csv", "Answers", "Response")
+rename_col("../data/QA_sample/mental_health_conversation - Mental_Health_FAQ.csv", "Questions", "Question")
+
+# %%
+#concating the QA sample mental health conversation csv file with p5_p7_p8 file
+concat_csv("../data/QA_sample/mental_health_conversation - Mental_Health_FAQ.csv", "../data/parquet_files/csv/p5_p7_p8.csv", "../data/parquet_files/csv/p5_p7_p8.csv")
+
+# %%
+#convert json files to csv
+# Read the JSON file
+json_to_csv("../data/json")
+
+
+# %%
+# now all json files are converted to csv, so we will rename few columns, to concat with other csv file
+rename_col("../data/json/csv/combined_data.csv", "Context", "Question")
+# %%
+#concat with parquet_csv
+concat_csv("../data/json/csv/combined_data.csv", "../data/parquet_files/csv/p5_p7_p8.csv", "../data/parquet_files/csv/p5_p7_p8_combined_json.csv")
+
+# %%
+#Now comes big game, accessing pdfs
+# first i have taken WHO's depression pdf
+pdf_path = '../data/who_and_corpus/who_depression.pdf'
+
+# Extract text
+text = extract_text_from_pdf(pdf_path)
+
+# Optionally, save the extracted text to a file
+with open('extracted_text.txt', 'w', encoding='utf-8') as f:
+    f.write(text)

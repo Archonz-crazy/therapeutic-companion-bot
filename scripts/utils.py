@@ -2,6 +2,8 @@
 # Imports
 import pandas as pd
 import os
+import fitz  # PyMuPDF
+
 #%%
 def convert_parquet_to_csv(directory):
     try:
@@ -112,16 +114,7 @@ def concat_csv_list(file_list, path):
         print("Merge completed")
     except Exception as e:
         print(f"Error: {e}")
-
-
-# %%
-def json_to_csv(file_path, output_file_path):
-    try:
-        df = pd.read_json(file_path)
-        df.to_csv(output_file_path, index=False)
-        print(f"JSON file successfully converted to CSV and saved to {output_file_path}")
-    except Exception as e:
-        print(f"Error: {e}")
+        
 # %%
 def drop_columns(file_path, columns):
     try:
@@ -131,3 +124,37 @@ def drop_columns(file_path, columns):
         print(f"Columns {columns} successfully dropped from {file_path}")
     except Exception as e:
         print(f"Error: {e}")
+# %%
+def json_to_csv(directory):
+    try:
+        # Create a new directory for the CSV files
+        csv_directory = os.path.join(directory, 'csv')
+        os.makedirs(csv_directory, exist_ok=True)
+
+        for filename in os.listdir(directory):
+            if filename.endswith(".json"):
+                df = pd.read_json(os.path.join(directory, filename))
+                # Save the CSV files in the new directory
+                df.to_csv(os.path.join(csv_directory, filename[:-8] + '.csv'), index=False)
+        print("All json files have been converted to CSV.")
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+# %%
+def extract_text_from_pdf(pdf_path):
+    # Open the PDF file
+    doc = fitz.open(pdf_path)
+    
+    # Initialize a text holder
+    text = ""
+    
+    # Iterate through each page
+    for page in doc:
+        # Extract text from the page and add it to the text holder
+        text += page.get_text()
+    
+    # Close the document
+    doc.close()
+    
+    return text
