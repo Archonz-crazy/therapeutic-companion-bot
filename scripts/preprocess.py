@@ -7,7 +7,8 @@ from utils import remove_string
 from utils import concat_csv
 from utils import drop_col
 from utils import remove_lines
-
+from utils import rename_col
+from utils import concat_csv_list
 #%%
 # Converting all the parquet files to CSV
 convert_parquet_to_csv("../data/parquet_files")
@@ -37,7 +38,31 @@ remove_lines("../data/parquet_files/csv/p7.csv","text", "[/INST] ")
 split_column("text", "\[\/INST\] ", "../data/parquet_files/csv/p7.csv")
 # %%
 # Removing the unwanted strings from p8
-remove_string("../data/parquet_files/csv/p8.csv", "instruction", "### Instruction: ")
-remove_string("../data/parquet_files/csv/p8.csv", "instruction", " ### Response:")
+remove_string("../data/parquet_files/csv/p8.csv", "instruction", "### Instruction:")
+remove_string("../data/parquet_files/csv/p8.csv", "instruction", "### Response:")
 
  # %%
+#Concat p5 and p7 csv files
+concat_csv("../data/parquet_files/csv/p5.csv","../data/parquet_files/csv/p7.csv", "../data/parquet_files/csv/p5_p7.csv")
+# %%
+#rename_col("../data/parquet_files/csv/p8.csv", "instruction", "Question")
+#rename_col("../data/parquet_files/csv/p8.csv", "output", "Response")
+
+# %%
+rename_col("../data/parquet_files/csv/p8.csv", "Question", "Response")
+
+# %%
+#Concat p5_p7, and p8 csv files
+concat_csv("../data/parquet_files/csv/p5_p7.csv","../data/parquet_files/csv/p8.csv", "../data/parquet_files/csv/p5_p7_p8.csv")
+
+# %%
+#Parquet Files done
+
+# %%
+#Start with CSV
+concat_csv_list = (['../data/TypesDisease/adhd.csv, ../data/TypesDisease/aspergers.csv', 
+                    '../data/TypesDisease/depression.csv', '../data/TypesDisease/ocd.csv', 
+                    '../data/TypesDisease/ptsd.csv'], "../data/TypesDisease/")
+
+
+# %%

@@ -82,3 +82,38 @@ def remove_lines(path, col_name, string):
     except Exception as e:
         print(f"Error: {e}")
 # %%
+def rename_col(path, col1, col2):
+    try:
+        # Read the CSV file into a DataFrame
+        df = pd.read_csv(path)
+        print(df.head())
+
+        # using the rename() method 
+        #df.rename(columns = {col_replace : new_col}, inplace = True) 
+        df.columns = [col1, col2]
+        print("Replace success.")
+        
+        print(df.head())
+        # Write the DataFrame back to the CSV file
+        df.to_csv(path, index=False)
+    except Exception as e:
+        print(f"Error: {e}")
+
+# %%
+def concat_csv_list(file_list, path):
+    try:
+        csv_list = []
+        for file in file_list:
+            csv_list.append(pd.read_csv(file))
+        print("csv list", csv_list)
+        # 5. merges single pandas DFs into a single DF, index is refreshed 
+        csv_merged = pd.concat(csv_list, ignore_index=True)
+        
+        # 6. Single DF is saved to the path in CSV format, without index column
+        csv_merged.to_csv(path + 'all_types.csv', index=False)
+        print("Merge completed")
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+# %%
