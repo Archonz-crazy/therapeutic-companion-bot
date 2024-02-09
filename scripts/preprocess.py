@@ -11,6 +11,7 @@ from utils import rename_col
 from utils import concat_csv_list
 from utils import drop_columns
 from utils import json_to_csv
+from utils import extract_text_from_pdf
 #%%
 # Converting all the parquet files to CSV
 convert_parquet_to_csv("../data/parquet_files")
@@ -111,8 +112,13 @@ concat_csv("../data/json/csv/combined_data.csv", "../data/parquet_files/csv/p5_p
 pdf_path = '../data/who_and_corpus/who_depression.pdf'
 
 # Extract text
-text = extract_text_from_pdf(pdf_path)
+depp_text = extract_text_from_pdf(pdf_path)
 
 # Optionally, save the extracted text to a file
-with open('extracted_text.txt', 'w', encoding='utf-8') as f:
-    f.write(text)
+with open('../data/who_and_corpus/extracted_text.txt', 'w', encoding='utf-8') as f:
+    f.write(depp_text)
+
+# %%
+
+
+# %%

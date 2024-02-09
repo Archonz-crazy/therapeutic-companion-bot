@@ -158,3 +158,4 @@ def extract_text_from_pdf(pdf_path):
     doc.close()
     
     return text
+# %%
