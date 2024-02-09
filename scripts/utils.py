@@ -18,17 +18,18 @@ def convert_parquet_to_csv(directory):
     except Exception as e:
         print(f"Error: {e}")
 # %%
-def split_column(path, column_name, keyword, file_path):
-    try:
-        df = pd.read_csv(path)
-        df[['question', 'response']] = df[column_name].str.split(keyword, expand=True)
-        df.drop(column_name, axis=1, inplace=True)
-        df.to_csv(file_path, index=False)
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
+def split_column(column_name, keyword, file_path):
+    df = pd.read_csv(file_path)
+    if column_name not in df.columns:
+        raise ValueError(f"Column {column_name} does not exist in the DataFrame")
+
+    # Split the column
+    df[[f'Question', f'Response']] = df[column_name].str.split(keyword, expand=True, n=1)
+    df.drop(column_name, axis=1, inplace=True)
+    df.to_csv(file_path, index=False)
+    print(f"Column {column_name} successfully split into Question and Response")
 #%%
-def remove_string(path, column_name, string_to_remove, file_path):
+def remove_string(path, column_name, string_to_remove):
     try:
         df = pd.read_csv(path)
         # Check if column_name is a valid column in df
@@ -42,7 +43,7 @@ def remove_string(path, column_name, string_to_remove, file_path):
             return None
 
         df[column_name] = df[column_name].str.replace(string_to_remove, '')
-        df.to_csv(file_path, index=False)
+        df.to_csv(path, index=False)
     except Exception as e:
         print(f"Error: {e}")
         return None
@@ -70,10 +71,14 @@ def drop_col(file_path, col_name):
 # %%
 def remove_lines(path, col_name, string):
     try:
+        # Read the CSV file into a DataFrame
         df = pd.read_csv(path)
-        filtered_df = df[df[col_name].str.contains("\[/INST\]", na=False)] 
-        filtered_df.to_csv(path, index=False)
-        print(f"Lines containing {string} successfully removed from {path}")
+
+        # Remove rows where col_name does not contain string
+        df = df[df[col_name].str.contains(string, na=False)]
+        print("Lines with no responses are removed.")
+        # Write the DataFrame back to the CSV file
+        df.to_csv(path, index=False)
     except Exception as e:
         print(f"Error: {e}")
 # %%
