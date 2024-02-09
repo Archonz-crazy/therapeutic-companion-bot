@@ -12,6 +12,7 @@ from utils import concat_csv_list
 from utils import drop_columns
 from utils import json_to_csv
 from utils import extract_text_from_pdf
+from utils import convert_pdf_to_txt
 #%%
 # Converting all the parquet files to CSV
 convert_parquet_to_csv("../data/parquet_files")
@@ -108,15 +109,7 @@ concat_csv("../data/json/csv/combined_data.csv", "../data/parquet_files/csv/p5_p
 
 # %%
 #Now comes big game, accessing pdfs
-# first i have taken WHO's depression pdf
-pdf_path = '../data/who_and_corpus/who_depression.pdf'
-
-# Extract text
-depp_text = extract_text_from_pdf(pdf_path)
-
-# Optionally, save the extracted text to a file
-with open('../data/who_and_corpus/extracted_text.txt', 'w', encoding='utf-8') as f:
-    f.write(depp_text)
+convert_pdf_to_txt("../data/who_and_corpus")
 
 # %%
 
