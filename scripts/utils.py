@@ -162,3 +162,17 @@ def doc_to_text(directory):
     except Exception as e:
         print(f"Error: {e}")
 # %%
+def change_file_name(file_path, new_file_name):
+    try:
+        # Extract the directory and extension from the file path
+        directory = os.path.dirname(file_path)
+        extension = os.path.splitext(file_path)[1]
+
+        # Create the new file path with the new file name and original extension
+        new_file_path = os.path.join(directory, new_file_name + extension)
+
+        # Rename the file
+        os.rename(file_path, new_file_path)
+        print(f"File name changed to {new_file_name}")
+    except Exception as e:
+        print(f"Error: {e}")
