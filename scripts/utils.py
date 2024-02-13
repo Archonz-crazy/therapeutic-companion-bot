@@ -1,5 +1,7 @@
 #%%
 # Imports
+import re
+import nltk
 import pandas as pd
 import os
 import warnings
@@ -176,3 +178,47 @@ def change_file_name(file_path, new_file_name):
         print(f"File name changed to {new_file_name}")
     except Exception as e:
         print(f"Error: {e}")
+#%%
+# removing special characters using regex
+def remove_special_characters(text):
+    try:
+        # Remove special characters, spaces, and empty lines using regex
+        text = re.sub(r'[^a-zA-Z\s]', '', text)
+        text = re.sub(r'\s+', ' ', text)
+        text = re.sub(r'\n\s*\n', '\n', text)
+        return text
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+#%%
+# removing stop words using nltk
+def remove_stopwords(text):
+    try:
+        # Tokenize the text
+        tokens = nltk.word_tokenize(text)
+
+        # Remove stopwords
+        stop_words = set(nltk.corpus.stopwords.words('english'))
+
+        # Remove punctuations
+        tokens = [word for word in tokens if word.lower() not in stop_words and word.isalpha()]
+
+        return tokens
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+# %%
+# lemmatizing the text
+def lemmatize_text(text):
+    try:
+        # Initialize the WordNetLemmatizer
+        lemmatizer = nltk.stem.WordNetLemmatizer()
+
+        # Lemmatize the text
+        text = [lemmatizer.lemmatize(word) for word in text]
+        return text
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+# %%
+    
