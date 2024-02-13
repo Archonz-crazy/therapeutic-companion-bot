@@ -156,7 +156,7 @@ def doc_to_text(directory):
                 full_text = []
                 for para in doc.paragraphs:
                     full_text.append(para.text)
-                with open(os.path.join(text_directory, filename[:-3] + '.txt'), 'w') as file:
+                with open(os.path.join(text_directory, filename[:-7] + '.txt'), 'w') as file:
                     file.write('\n'.join(full_text))
         print("All word files have been converted to text.")
     except Exception as e:

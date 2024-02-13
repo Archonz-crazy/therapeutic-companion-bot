@@ -109,24 +109,6 @@ concat_csv("../data/json/csv/combined_data.csv", "../data/parquet_files/csv/p5_p
 #Now we will convert the word file to text
 doc_to_text("../data/who_and_corpus/")
 
+
+
 # %%
-from docx import Document
-
-def dtt(file_path):
-    # Load the .docx file
-    doc = Document(file_path)
-    full_text = []
-    
-    # Iterate through each paragraph in the document and append its text to the list
-    for para in doc.paragraphs:
-        full_text.append(para.text)
-    
-    # Join all paragraphs text into a single string
-    return '\n'.join(full_text)
-
-# Example usage
-file_path = '../data/who_and_corpus/suicide_prevention.docx'  # Replace this with the path to your .docx file
-text = dtt(file_path)
-print(text)
-# %%
-
