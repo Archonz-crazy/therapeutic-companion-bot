@@ -2,7 +2,11 @@
 # Imports
 import pandas as pd
 import os
+import os
+import pytesseract
+from PIL import Image
 import fitz  # PyMuPDF
+#pytesseract.pytesseract.tesseract_cmd = r'/Users/mahi/anaconda3/envs/nlp/lib/python3.11/site-packages/pytesseract/pytesseract.py'
 
 #%%
 def convert_parquet_to_csv(directory):
@@ -159,3 +163,73 @@ def extract_text_from_pdf(pdf_path):
     
     return text
 # %%
+# PyMuPDF
+def convert_pdf_to_txt(directory):
+    try:
+        # Create a new directory for the text files
+        txt_directory = os.path.join(directory, 'txt')
+        os.makedirs(txt_directory, exist_ok=True)
+
+        img_directory = os.path.join(directory, 'images')
+        os.makedirs(img_directory, exist_ok=True)
+
+        for filename in os.listdir(directory):
+            if filename.endswith(".pdf"):
+                pdf_path = os.path.join(directory, filename)
+                txt_path = os.path.join(txt_directory, filename[:-4] + '.txt')
+                text = extract_text_from_pdf(pdf_path, img_directory)
+                formatted_text = format_text(text)
+                save_text_to_file(formatted_text, txt_path)
+        print("All PDF files have been converted to TXT.")
+    except Exception as e:
+        print(f"Error: {e}")
+
+def extract_text_from_pdf(pdf_path, img_directory):
+    # Open the PDF file
+    doc = fitz.open(pdf_path)
+    
+    # Initialize a text holder
+    text = ""
+    
+    # Iterate through each page
+    for page in doc:
+        # Extract text from the page and add it to the text holder
+        text += page.get_text()
+    
+        # Extract images from the page and perform OCR on them
+        for img in page.get_images():
+            xref = img[0]
+            base_image = doc.extract_image(xref)
+            image_data = base_image["image"]
+
+    # Save the image to the images directory
+            img_path = os.path.join(img_directory, img[-1])
+            with open(img_path, 'wb') as f:
+                f.write(image_data)
+
+            img_text = extract_text_from_image(img_path)
+            text += img_text
+    # Close the document
+    doc.close()
+    
+    return text
+
+def extract_text_from_image(img_path):
+    # Open the image file
+    img = Image.open(img_path)
+    
+    # Perform OCR on the image using pytesseract
+    img_text = pytesseract.image_to_string(img)
+    
+    return img_text
+
+def format_text(text):
+    # Format the text nicely, e.g., handle tables
+    
+    # TODO: Implement text formatting logic
+    
+    return text
+
+def save_text_to_file(text, file_path):
+    with open(file_path, 'w') as file:
+        file.write(text)
