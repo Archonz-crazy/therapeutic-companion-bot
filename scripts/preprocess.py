@@ -12,6 +12,7 @@ from utils import concat_csv_list
 from utils import drop_columns
 from utils import json_to_csv
 from utils import doc_to_text
+from utils import change_file_name
 #%%
 # Converting all the parquet files to CSV
 convert_parquet_to_csv("../data/parquet_files")
@@ -75,6 +76,9 @@ drop_col("../data/TypesDisease/all_types.csv", columns_to_drop)
 # Dropping some columns from the mental_disorders_reddit.csv
 columns_to_drop = ['created_utc', "over_18"]
 drop_col("../data/TypesDisease/mental_disorders_reddit.csv", columns_to_drop)
+
+#%%
+drop_col("../data/TypesDisease/reddit-data.csv", "id")
 # %%
 # Reoroderingand renaming all_types.csv
 rename_col("../data/TypesDisease/all_types.csv", "body", "selftext")
@@ -109,6 +113,14 @@ concat_csv("../data/json/csv/combined_data.csv", "../data/parquet_files/csv/p5_p
 #Now we will convert the word file to text
 doc_to_text("../data/who_and_corpus/")
 
-
+# %%
+change_file_name("../data/parquet_files/csv/p3_p6.csv", "sentiment_analysis_1")
+# %%
+change_file_name("../data/parquet_files/csv/p4.csv", "greeting_1")
 
 # %%
+change_file_name("../data/parquet_files/csv/p1_p2.csv", "response_1")
+# %%
+change_file_name("../data/parquet_files/csv/p5_p7_p8_combined_json.csv", "response_2")
+# %%
+change_file_name("../data/TypesDisease/reddit-data.csv", "reddit_types")
