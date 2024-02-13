@@ -11,8 +11,7 @@ from utils import rename_col
 from utils import concat_csv_list
 from utils import drop_columns
 from utils import json_to_csv
-from utils import extract_text_from_pdf
-from utils import convert_pdf_to_txt
+from utils import doc_to_text
 #%%
 # Converting all the parquet files to CSV
 convert_parquet_to_csv("../data/parquet_files")
@@ -106,12 +105,28 @@ rename_col("../data/json/csv/combined_data.csv", "Context", "Question")
 # %%
 #concat with parquet_csv
 concat_csv("../data/json/csv/combined_data.csv", "../data/parquet_files/csv/p5_p7_p8.csv", "../data/parquet_files/csv/p5_p7_p8_combined_json.csv")
+# %%
+#Now we will convert the word file to text
+doc_to_text("../data/who_and_corpus/")
 
 # %%
-#Now comes big game, accessing pdfs
-convert_pdf_to_txt("../data/who_and_corpus")
+from docx import Document
 
+def dtt(file_path):
+    # Load the .docx file
+    doc = Document(file_path)
+    full_text = []
+    
+    # Iterate through each paragraph in the document and append its text to the list
+    for para in doc.paragraphs:
+        full_text.append(para.text)
+    
+    # Join all paragraphs text into a single string
+    return '\n'.join(full_text)
+
+# Example usage
+file_path = '../data/who_and_corpus/suicide_prevention.docx'  # Replace this with the path to your .docx file
+text = dtt(file_path)
+print(text)
 # %%
 
-
-# %%
