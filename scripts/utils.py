@@ -2,6 +2,9 @@
 # Imports
 import re
 import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
 import pandas as pd
 import os
 import warnings

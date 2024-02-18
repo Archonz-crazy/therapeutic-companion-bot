@@ -116,7 +116,7 @@ doc_to_text("../data/who_and_corpus/")
 # %%
 change_file_name("../data/parquet_files/csv/p3_p6.csv", "sentiment_analysis_1")
 # %%
-change_file_name("../data/parquet_files/csv/p4.csv", "rules_fact")
+change_file_name("../data/parquet_files/csv/p4.csv", "rules_facts")
 
 # %%
 change_file_name("../data/parquet_files/csv/p1_p2.csv", "response_1")
