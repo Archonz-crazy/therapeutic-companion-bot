@@ -193,7 +193,9 @@ def remove_special_characters(text):
     except Exception as e:
         print(f"Error: {e}")
         return None
-#%%
+
+
+# %%
 # removing stop words using nltk
 def remove_stopwords_and_lemmatize(text):
     try:
@@ -202,21 +204,15 @@ def remove_stopwords_and_lemmatize(text):
 
         # Remove stopwords
         stop_words = set(nltk.corpus.stopwords.words('english'))
-
-        # Remove punctuations
-        tokens = [word for word in tokens if word.lower() not in stop_words and word.isalpha()]
+        tokens = [word for word in tokens if word not in stop_words and word.isalpha()]
         
         # Initialize the WordNetLemmatizer
         lemmatizer = nltk.stem.WordNetLemmatizer()
 
         # Lemmatize the text
-        text = [lemmatizer.lemmatize(word) for word in text]
-        return text
-
-        return tokens
+        output = [lemmatizer.lemmatize(word) for word in tokens]
+        return output
     except Exception as e:
         print(f"Error: {e}")
         return None
-
 # %%
-    
