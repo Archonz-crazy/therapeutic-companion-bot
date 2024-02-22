@@ -18,7 +18,7 @@ for filename in os.listdir(directory):
         file_path = os.path.join(directory, filename)
         with open(file_path, 'r') as file:
             text = file.read().lower()   # Convert to lower case
-             # Remove spaces, special characters, and empty lines
+            # Remove spaces, special characters, and empty lines
             text = remove_special_characters(text)
             # Remove stopwords and lemmatize it
             text = remove_stopwords_and_lemmatize(text)
@@ -38,7 +38,8 @@ with open(output_file_path, 'r') as file:
 def preprocess_text(text):
     text = str(text).lower()  # Convert to lower case
     text = remove_special_characters(text)  # Remove special characters
-    text = text.replace("NaN", "")  # Rejoin words and remove "NaN"
+    text = text.replace("NaN", "")
+    text = text.replace("nan", "")# Rejoin words and remove "NaN"
     text = remove_stopwords_and_lemmatize(text)  # Process each word
     return text
 
