@@ -5,26 +5,32 @@ import os
 import dask.dataframe as dd
 from dask.diagnostics import ProgressBar
 import pandas as pd
-from utils import remove_special_characters, remove_stopwords, lemmatize_text
+from utils import remove_special_characters, remove_stopwords_and_lemmatize
 
 #%%
 # Read text files with .txt extension in "../data/knowledge" directory
 directory = "../data/knowledge"
+output_file_path = os.path.join(directory, "text_preprocess.txt")
+
+# Ensure the output file is empty before starting
+with open(output_file_path, 'w') as file:
+    file.write("")
+
 for filename in os.listdir(directory):
     if filename.endswith(".txt"):
         file_path = os.path.join(directory, filename)
         with open(file_path, 'r') as file:
-            text = file.read()
-            # Remove spaces, special characters, and empty lines
+            text = file.read().lower()  # Convert to lower case                 # Remove spaces, special characters, and empty lines
             text = remove_special_characters(text)
-            # Remove stopwords
-            text = remove_stopwords(text)
-            # Lemmatize text
-            text = lemmatize_text(text)
-            # Perform further processing on the preprocessed text
-            print(text)
-
-
+            # Remove stopwords and lemmatize it
+            text = remove_stopwords_and_lemmatize(text)
+            # Append the processed tokens to the single output file
+            with open(output_file_path, 'a') as outfile:
+                outfile.write(" ".join(text) + "\n")
+print("preprocessing done \n")
+with open(output_file_path, 'r') as file:
+    contents = file.read()
+    print(contents)
 #%%
 # TRYING TO USE CHUNK SIZE TO PROCESS THE DATA IN BATCH
 # Function to preprocess all text columns in a DataFrame chunk
@@ -35,7 +41,6 @@ def preprocess_text_columns(chunk):
     # Apply preprocessing to each text column
     for column in text_columns:
         chunk[column] = chunk[column].astype(str)
-        chunk[column] = chunk[column].apply(lambda x: x.replace(" ", ""))  # Remove spaces
         chunk[column] = chunk[column].apply(remove_special_characters)  # Remove special characters
         chunk[column] = chunk[column].apply(lambda x: x.replace("NaN", ""))  # Remove NaN values
         chunk[column] = chunk[column].apply(remove_stopwords)  # Remove stopwords
@@ -45,7 +50,7 @@ def preprocess_text_columns(chunk):
 #%%
 # Process each CSV file in the directory
 for filename in os.listdir(directory):
-    if filename.endswith(".csv"):
+    if filename == "labelled.csv":
         file_path = os.path.join(directory, filename)
         chunk_size = 80000  # Define the size of each chunk
         
