@@ -208,7 +208,6 @@ def remove_stopwords_and_lemmatize(text):
         
         # Initialize the WordNetLemmatizer
         lemmatizer = nltk.stem.WordNetLemmatizer()
-
         # Lemmatize the text
         output = [lemmatizer.lemmatize(word) for word in tokens]
         return output

@@ -69,3 +69,4 @@ for filename in os.listdir(directory):
     if filename.endswith(".csv"):
         file_path = os.path.join(directory, filename)
         preprocess_csv(file_path)
+# %%
