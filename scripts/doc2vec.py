@@ -3,6 +3,10 @@ import os
 import pandas as pd
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import multiprocessing
+from gensim.models.doc2vec import Doc2Vec
+import multiprocessing
+import ast
+import csv
 #%%
 directory = "../data/knowledge"
 d2v_directory = os.path.join(directory, 'd2v')
@@ -36,8 +40,8 @@ model_d2v.save(os.path.join(d2v_directory, 'model_d2v.model'))
 # %%
 #view model_d2v.model file
 from gensim.models.doc2vec import Doc2Vec
-model = Doc2Vec.load(os.path.join(d2v_directory, 'model_d2v.model'))
-
+model = Doc2Vec.load(os.path.join(d2v_directory, 'model_d2v_qa.model'))
+#%%
 #view the document vector
 document_tag = "text_file"
 document_vector = model.dv[document_tag]
@@ -45,7 +49,7 @@ print(f"Vector for document '{document_tag}':\n{document_vector}")
 
 # %%
 # View a word vector
-word = "example"
+word = "hello"
 word_vector = model.wv[word]
 print(f"Vector for word '{word}':\n{word_vector}")
 # %%
@@ -76,7 +80,7 @@ def process_csv_files(directory):
     for filename in os.listdir(directory):
         if filename.endswith(".csv"):
             file_path = os.path.join(directory, filename)
-            df = pd.read_csv(file_path)
+            df = pd.read_csv(file_path, quoting=csv.QUOTE_NONE, on_bad_lines='skip')
             
             # Identify all columns of type 'object' (string)
             text_columns = [col for col in df.columns if df[col].dtype == 'object']
@@ -87,17 +91,19 @@ def process_csv_files(directory):
             
             print(f"Using columns {text_columns} from {file_path}")
             for index, row in df.iterrows():
-                # Concatenate the text from all string columns, separating by a space
-                concatenated_text = ' '.join(str(row[col]) for col in text_columns)
-                tokens = concatenated_text.split()
+                # Assuming tokens are stored as a string representation of a list
+                # and concatenating the text from all string columns
+                tokens = []
+                for col in text_columns:
+                    column_data = row[col]
+                    # Safely evaluate the string if it looks like a list, otherwise split normally
+                    column_tokens = ast.literal_eval(column_data) if (isinstance(column_data, str) and column_data.startswith('[') and column_data.endswith(']')) else str(column_data).split()
+                    tokens.extend(column_tokens)
+                
                 tagged_data.append(TaggedDocument(words=tokens, tags=[f"{os.path.basename(file_path)}_{index}"]))
     return tagged_data
 
 #%%
-# Process the text file
-from gensim.models.doc2vec import Doc2Vec
-import multiprocessing
-
 # Directory paths
 directory = "../data/knowledge"
 d2v_directory = os.path.join(directory, 'd2v')
@@ -119,4 +125,26 @@ model_d2v_combined.train(tagged_data, total_examples=model_d2v_combined.corpus_c
 
 # Save the model
 model_d2v_combined.save(os.path.join(d2v_directory, 'model_d2v_combined.model'))
+
+# %%
+# Directory paths for sample_q_and_a files
+directory = "../data/sample_q_and_a"
+d2v_directory = os.path.join(directory, 'd2v')
+os.makedirs(d2v_directory, exist_ok=True)
+
+# Initialize tagged data list
+tagged_data = []
+
+
+# Process all CSV files in the directory
+tagged_data.extend(process_csv_files(directory))
+# Train the Doc2Vec model
+model_d2v_qa = Doc2Vec(vector_size=100, alpha=0.025, min_alpha=0.00025, min_count=1, dm=0, workers=multiprocessing.cpu_count(), epochs=100)
+model_d2v_qa.build_vocab(tagged_data)
+model_d2v_qa.train(tagged_data, total_examples=model_d2v_qa.corpus_count, epochs=model_d2v_qa.epochs)
+
+# Save the model
+model_d2v_qa.save(os.path.join(d2v_directory, 'model_d2v_qa.model'))
+
+
 # %%
