@@ -99,7 +99,6 @@ def process_csv_files(directory):
                     # Safely evaluate the string if it looks like a list, otherwise split normally
                     column_tokens = ast.literal_eval(column_data) if (isinstance(column_data, str) and column_data.startswith('[') and column_data.endswith(']')) else str(column_data).split()
                     tokens.extend(column_tokens)
-                
                 tagged_data.append(TaggedDocument(words=tokens, tags=[f"{os.path.basename(file_path)}_{index}"]))
     return tagged_data
 
@@ -146,5 +145,16 @@ model_d2v_qa.train(tagged_data, total_examples=model_d2v_qa.corpus_count, epochs
 # Save the model
 model_d2v_qa.save(os.path.join(d2v_directory, 'model_d2v_qa.model'))
 
+
+# %%
+# view the model_d2v_qa.model file
+for i in range(10):
+    print(model_d2v_qa.docvecs[i])
+
+#%%
+#check the model_d2v_qa.model file for any word
+for i in range(10):
+    print(model_d2v_qa.wv.index_to_key[i])
+    
 
 # %%
