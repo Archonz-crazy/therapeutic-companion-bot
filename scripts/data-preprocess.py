@@ -48,16 +48,18 @@ def preprocess_text(text):
     text = remove_stopwords_and_lemmatize(text)  # Process each word
     return text
 
-def preprocess_csv(file_path):
+def preprocess_csv(file_path, filename, output_dir):
     df = pd.read_csv(file_path)
     text_columns = df.select_dtypes(include=['object']).columns
     
     for column in text_columns:
         df[column] = df[column].apply(preprocess_text)
+    new_file_name = filename.replace('.csv', '_processed.csv')
     
-    processed_file_path = file_path.replace('.csv', '_processed.csv')
-    df.to_csv(processed_file_path, index=False)
-    print(f"Preprocessed data saved to: {processed_file_path}")
+    # Save the preprocessed data to a new file in output_dir
+    df.to_csv(os.path.join(output_dir, new_file_name), index=False)
+    
+    print(f"Preprocessed data saved to: {os.path.join(output_dir, new_file_name)}")
     print(df.head())
 
 #%%
@@ -66,14 +68,19 @@ directory = "../data/knowledge"
 for filename in os.listdir(directory):
     if filename.endswith(".csv"):
         file_path = os.path.join(directory, filename)
-        preprocess_csv(file_path)
+        preprocess_csv(file_path, filename, output_dir)
 
 # %%
 # Preprocess each csv file in the sample_q_and_a directory
 directory = "../data/sample_q_and_a"
+output_dir_qa = os.path.join(directory, 'preprocess')
+os.makedirs(output_dir_qa, exist_ok=True)
 for filename in os.listdir(directory):
     if filename.endswith(".csv"):
         file_path = os.path.join(directory, filename)
-        preprocess_csv(file_path)
+        preprocess_csv(file_path, filename, output_dir_qa)
 
 
+
+
+# %%

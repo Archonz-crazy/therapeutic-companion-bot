@@ -8,10 +8,12 @@ import multiprocessing
 import ast
 import csv
 #%%
+'''
 directory = "../data/knowledge"
 d2v_directory = os.path.join(directory, 'd2v')
 
 os.makedirs(d2v_directory, exist_ok=True)
+
 #%%
 # Load data
 # The path to your single text file
@@ -62,23 +64,28 @@ print("All document tags:", all_document_tags)
 vocabulary = list(model.wv.key_to_index.keys())
 print("Vocabulary:", vocabulary)
 
-
+'''
 
 
 # %%
-def process_text_file(file_path):
+# Process all text files in the knowledge directory
+def process_text_file(directory):
     tagged_data = []
-    with open(file_path, 'r') as file:
-        text = file.read()
-        tokens = text.split()  # Tokenize the text
-        tagged_data.append(TaggedDocument(words=tokens, tags=["text_file"]))
+    for filename in os.listdir(directory):
+        if filename.endswith(".txt"):
+            file_path = os.path.join(directory, filename)
+            with open(file_path, 'r') as file:
+                text = file.read()
+                tokens = text.split() # Tokenize the text
+                tagged_data.append(TaggedDocument(words=tokens, tags=["text_file"]))
     return tagged_data
 
 #%%
+# Process all CSV files in the knowledge directory
 def process_csv_files(directory):
     tagged_data = []
     for filename in os.listdir(directory):
-        if filename.endswith("preprocessed.csv"):
+        if filename.endswith(".csv"):
             file_path = os.path.join(directory, filename)
             df = pd.read_csv(file_path, quoting=csv.QUOTE_NONE, on_bad_lines='skip')
             
@@ -104,45 +111,41 @@ def process_csv_files(directory):
 
 #%%
 # Directory paths
-directory = "../data/knowledge"
+directory = "../data/knowledge/preprocess"
 d2v_directory = os.path.join(directory, 'd2v')
 os.makedirs(d2v_directory, exist_ok=True)
-
 # Initialize tagged data list
 tagged_data = []
-
-# Process the single text file
-text_file_path = '../data/knowledge/text_preprocess.txt'
-tagged_data.extend(process_text_file(text_file_path))
-
-# Process all CSV files in the directory
+# Process the all text file that ends with .txt in the directory preprocess under knowledge folder
+tagged_data.extend(process_text_file(directory))
+# Process all CSV files in the preprocess directory of knowledge folder
 tagged_data.extend(process_csv_files(directory))
-# Train the Doc2Vec model
+
+#%%
+# Train the Doc2Vec model for txt and csv files of knowledge folder
 model_d2v_combined = Doc2Vec(vector_size=100, alpha=0.025, min_alpha=0.00025, min_count=1, dm=0, workers=multiprocessing.cpu_count(), epochs=100)
 model_d2v_combined.build_vocab(tagged_data)
 model_d2v_combined.train(tagged_data, total_examples=model_d2v_combined.corpus_count, epochs=model_d2v_combined.epochs)
 
-# Save the model
+# Save the model of both text file and csv file from preprocess directory of knowledge
 model_d2v_combined.save(os.path.join(d2v_directory, 'model_d2v_combined.model'))
 
 # %%
 # Directory paths for sample_q_and_a files
-directory = "../data/sample_q_and_a"
+directory = "../data/sample_q_and_a/preprocess"
 d2v_directory = os.path.join(directory, 'd2v')
 os.makedirs(d2v_directory, exist_ok=True)
-
 # Initialize tagged data list
 tagged_data = []
-
-
-# Process all CSV files in the directory
+# Process all CSV files in the directory preprocess under sample_qa folder
 tagged_data.extend(process_csv_files(directory))
-# Train the Doc2Vec model
+
+#%%
+# Train the Doc2Vec model for sample_q_and_a folder
 model_d2v_qa = Doc2Vec(vector_size=100, alpha=0.025, min_alpha=0.00025, min_count=1, dm=0, workers=multiprocessing.cpu_count(), epochs=100)
 model_d2v_qa.build_vocab(tagged_data)
 model_d2v_qa.train(tagged_data, total_examples=model_d2v_qa.corpus_count, epochs=model_d2v_qa.epochs)
-
-# Save the model
+# Save the model of sample_q_and_a folder
 model_d2v_qa.save(os.path.join(d2v_directory, 'model_d2v_qa.model'))
 
 
@@ -157,4 +160,3 @@ for i in range(10):
     print(model_d2v_qa.wv.index_to_key[i])
     
 
-# %%
