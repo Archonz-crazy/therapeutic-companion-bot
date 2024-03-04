@@ -193,35 +193,25 @@ def remove_special_characters(text):
     except Exception as e:
         print(f"Error: {e}")
         return None
-#%%
+
+
+# %%
 # removing stop words using nltk
-def remove_stopwords(text):
+def remove_stopwords_and_lemmatize(text):
     try:
         # Tokenize the text
         tokens = nltk.word_tokenize(text)
 
         # Remove stopwords
         stop_words = set(nltk.corpus.stopwords.words('english'))
-
-        # Remove punctuations
-        tokens = [word for word in tokens if word.lower() not in stop_words and word.isalpha()]
-
-        return tokens
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-# %%
-# lemmatizing the text
-def lemmatize_text(text):
-    try:
+        tokens = [word for word in tokens if word not in stop_words and word.isalpha()]
+        
         # Initialize the WordNetLemmatizer
         lemmatizer = nltk.stem.WordNetLemmatizer()
-
         # Lemmatize the text
-        text = [lemmatizer.lemmatize(word) for word in text]
-        return text
+        output = [lemmatizer.lemmatize(word) for word in tokens]
+        return output
     except Exception as e:
         print(f"Error: {e}")
         return None
 # %%
-    

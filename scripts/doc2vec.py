@@ -1,0 +1,160 @@
+#%%
+import os
+import pandas as pd
+from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+import multiprocessing
+from gensim.models.doc2vec import Doc2Vec
+import multiprocessing
+import ast
+import csv
+#%%
+directory = "../data/knowledge"
+d2v_directory = os.path.join(directory, 'd2v')
+
+os.makedirs(d2v_directory, exist_ok=True)
+#%%
+# Load data
+# The path to your single text file
+text_file_path = '../data/knowledge/text_preprocess.txt'
+
+# Process the single text file
+tagged_data = []
+
+with open(text_file_path, 'r') as file:
+    text = file.read()
+    #Tokenize the text
+    tokens = text.split()
+    tagged_data.append(TaggedDocument(words=tokens, tags=["text_file"]))
+#%%  
+# Initialize and train the Doc2Vec model
+model_d2v = Doc2Vec(vector_size=100, alpha=0.025, min_alpha=0.00025, min_count=1, dm=0, workers=multiprocessing.cpu_count(), epochs=100)
+model_d2v.build_vocab(tagged_data)
+
+#%%
+# Train the Doc2Vec model
+model_d2v.train(tagged_data, total_examples=model_d2v.corpus_count, epochs=model_d2v.epochs)
+
+#%%
+# Save the model
+model_d2v.save(os.path.join(d2v_directory, 'model_d2v.model'))
+# %%
+#view model_d2v.model file
+from gensim.models.doc2vec import Doc2Vec
+model = Doc2Vec.load(os.path.join(d2v_directory, 'model_d2v_qa.model'))
+#%%
+#view the document vector
+document_tag = "text_file"
+document_vector = model.dv[document_tag]
+print(f"Vector for document '{document_tag}':\n{document_vector}")
+
+# %%
+# View a word vector
+word = "hello"
+word_vector = model.wv[word]
+print(f"Vector for word '{word}':\n{word_vector}")
+# %%
+# List all document tags
+all_document_tags = list(model.dv.index_to_key)
+print("All document tags:", all_document_tags)
+
+# %%
+# Inspect the vocabulary
+vocabulary = list(model.wv.key_to_index.keys())
+print("Vocabulary:", vocabulary)
+
+
+
+
+# %%
+def process_text_file(file_path):
+    tagged_data = []
+    with open(file_path, 'r') as file:
+        text = file.read()
+        tokens = text.split()  # Tokenize the text
+        tagged_data.append(TaggedDocument(words=tokens, tags=["text_file"]))
+    return tagged_data
+
+#%%
+def process_csv_files(directory):
+    tagged_data = []
+    for filename in os.listdir(directory):
+        if filename.endswith(".csv"):
+            file_path = os.path.join(directory, filename)
+            df = pd.read_csv(file_path, quoting=csv.QUOTE_NONE, on_bad_lines='skip')
+            
+            # Identify all columns of type 'object' (string)
+            text_columns = [col for col in df.columns if df[col].dtype == 'object']
+            
+            if not text_columns:
+                print(f"No suitable text columns found in {file_path}. Skipping file.")
+                continue
+            
+            print(f"Using columns {text_columns} from {file_path}")
+            for index, row in df.iterrows():
+                # Assuming tokens are stored as a string representation of a list
+                # and concatenating the text from all string columns
+                tokens = []
+                for col in text_columns:
+                    column_data = row[col]
+                    # Safely evaluate the string if it looks like a list, otherwise split normally
+                    column_tokens = ast.literal_eval(column_data) if (isinstance(column_data, str) and column_data.startswith('[') and column_data.endswith(']')) else str(column_data).split()
+                    tokens.extend(column_tokens)
+                tagged_data.append(TaggedDocument(words=tokens, tags=[f"{os.path.basename(file_path)}_{index}"]))
+    return tagged_data
+
+#%%
+# Directory paths
+directory = "../data/knowledge"
+d2v_directory = os.path.join(directory, 'd2v')
+os.makedirs(d2v_directory, exist_ok=True)
+
+# Initialize tagged data list
+tagged_data = []
+
+# Process the single text file
+text_file_path = '../data/knowledge/text_preprocess.txt'
+tagged_data.extend(process_text_file(text_file_path))
+
+# Process all CSV files in the directory
+tagged_data.extend(process_csv_files(directory))
+# Train the Doc2Vec model
+model_d2v_combined = Doc2Vec(vector_size=100, alpha=0.025, min_alpha=0.00025, min_count=1, dm=0, workers=multiprocessing.cpu_count(), epochs=100)
+model_d2v_combined.build_vocab(tagged_data)
+model_d2v_combined.train(tagged_data, total_examples=model_d2v_combined.corpus_count, epochs=model_d2v_combined.epochs)
+
+# Save the model
+model_d2v_combined.save(os.path.join(d2v_directory, 'model_d2v_combined.model'))
+
+# %%
+# Directory paths for sample_q_and_a files
+directory = "../data/sample_q_and_a"
+d2v_directory = os.path.join(directory, 'd2v')
+os.makedirs(d2v_directory, exist_ok=True)
+
+# Initialize tagged data list
+tagged_data = []
+
+
+# Process all CSV files in the directory
+tagged_data.extend(process_csv_files(directory))
+# Train the Doc2Vec model
+model_d2v_qa = Doc2Vec(vector_size=100, alpha=0.025, min_alpha=0.00025, min_count=1, dm=0, workers=multiprocessing.cpu_count(), epochs=100)
+model_d2v_qa.build_vocab(tagged_data)
+model_d2v_qa.train(tagged_data, total_examples=model_d2v_qa.corpus_count, epochs=model_d2v_qa.epochs)
+
+# Save the model
+model_d2v_qa.save(os.path.join(d2v_directory, 'model_d2v_qa.model'))
+
+
+# %%
+# view the model_d2v_qa.model file
+for i in range(10):
+    print(model_d2v_qa.docvecs[i])
+
+#%%
+#check the model_d2v_qa.model file for any word
+for i in range(10):
+    print(model_d2v_qa.wv.index_to_key[i])
+    
+
+# %%
