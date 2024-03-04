@@ -8,6 +8,7 @@ nltk.download('wordnet')
 import pandas as pd
 import os
 import warnings
+from docx import Document
 warnings.filterwarnings("ignore",category=DeprecationWarning)
 #pytesseract.pytesseract.tesseract_cmd = r'/Users/mahi/anaconda3/envs/nlp/lib/python3.11/site-packages/pytesseract/pytesseract.py'
 
@@ -149,7 +150,6 @@ def json_to_csv(directory):
 
 
 # %%
-from docx import Document
 def doc_to_text(directory):
     try:
         # Create a new directory for the text files
