@@ -40,7 +40,7 @@ model_d2v.save(os.path.join(d2v_directory, 'model_d2v.model'))
 # %%
 #view model_d2v.model file
 from gensim.models.doc2vec import Doc2Vec
-model = Doc2Vec.load(os.path.join(d2v_directory, 'model_d2v_qa.model'))
+model = Doc2Vec.load(os.path.join(d2v_directory, 'model_d2v.model'))
 #%%
 #view the document vector
 document_tag = "text_file"
@@ -78,7 +78,7 @@ def process_text_file(file_path):
 def process_csv_files(directory):
     tagged_data = []
     for filename in os.listdir(directory):
-        if filename.endswith(".csv"):
+        if filename.endswith("preprocessed.csv"):
             file_path = os.path.join(directory, filename)
             df = pd.read_csv(file_path, quoting=csv.QUOTE_NONE, on_bad_lines='skip')
             
