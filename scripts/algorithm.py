@@ -28,5 +28,5 @@ classification = classify_question(question)
 print(f"The question is {classification} based question")
 
 #%%
-#predict the answer from the knowledge or sample_q_and_a corpus and based on classification and display to the user using RNN and LSTM model    
-def rnn_lstm(question, classification):
+#predict the answer from the knowledge or sample_q_and_a corpus and based on classification 
+# and predict the answer using RNN and LSTM model

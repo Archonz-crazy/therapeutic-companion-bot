@@ -3,6 +3,7 @@ import os
 import pandas as pd
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import multiprocessing
+from concurrent.futures import ProcessPoolExecutor
 from gensim.models.doc2vec import Doc2Vec
 import multiprocessing
 import ast
@@ -42,6 +43,7 @@ model_d2v.save(os.path.join(d2v_directory, 'model_d2v.model'))
 # %%
 #view model_d2v.model file
 from gensim.models.doc2vec import Doc2Vec
+from concurrent.futures import ProcessPoolExecutor
 model = Doc2Vec.load(os.path.join(d2v_directory, 'model_d2v.model'))
 #%%
 #view the document vector
@@ -116,8 +118,10 @@ d2v_directory = os.path.join(directory, 'd2v')
 os.makedirs(d2v_directory, exist_ok=True)
 # Initialize tagged data list
 tagged_data = []
+
 # Process the all text file that ends with .txt in the directory preprocess under knowledge folder
 tagged_data.extend(process_text_file(directory))
+
 # Process all CSV files in the preprocess directory of knowledge folder
 tagged_data.extend(process_csv_files(directory))
 
@@ -125,7 +129,10 @@ tagged_data.extend(process_csv_files(directory))
 # Train the Doc2Vec model for txt and csv files of knowledge folder
 model_d2v_combined = Doc2Vec(vector_size=100, alpha=0.025, min_alpha=0.00025, min_count=1, dm=0, workers=multiprocessing.cpu_count(), epochs=100)
 model_d2v_combined.build_vocab(tagged_data)
-model_d2v_combined.train(tagged_data, total_examples=model_d2v_combined.corpus_count, epochs=model_d2v_combined.epochs)
+
+# Use ProcessPoolExecutor to parallelize file processing
+with ProcessPoolExecutor() as executor:
+    executor.map(model_d2v_combined.train, tagged_data)
 
 # Save the model of both text file and csv file from preprocess directory of knowledge
 model_d2v_combined.save(os.path.join(d2v_directory, 'model_d2v_combined.model'))
@@ -160,3 +167,5 @@ for i in range(10):
     print(model_d2v_qa.wv.index_to_key[i])
     
 
+
+# %%
