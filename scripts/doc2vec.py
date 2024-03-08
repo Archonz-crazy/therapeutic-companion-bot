@@ -3,10 +3,15 @@ import os
 import pandas as pd
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import multiprocessing
+from concurrent.futures import ProcessPoolExecutor
 from gensim.models.doc2vec import Doc2Vec
+from gensim.models import FastText
 import multiprocessing
+from multiprocessing import Pool
 import ast
 import csv
+import cProfile
+import pstats
 #%%
 '''
 directory = "../data/knowledge"
@@ -42,6 +47,7 @@ model_d2v.save(os.path.join(d2v_directory, 'model_d2v.model'))
 # %%
 #view model_d2v.model file
 from gensim.models.doc2vec import Doc2Vec
+from concurrent.futures import ProcessPoolExecutor
 model = Doc2Vec.load(os.path.join(d2v_directory, 'model_d2v.model'))
 #%%
 #view the document vector
@@ -81,6 +87,7 @@ def process_text_file(directory):
     return tagged_data
 
 #%%
+'''
 # Process all CSV files in the knowledge directory
 def process_csv_files(directory):
     tagged_data = []
@@ -108,6 +115,45 @@ def process_csv_files(directory):
                     tokens.extend(column_tokens)
                 tagged_data.append(TaggedDocument(words=tokens, tags=[f"{os.path.basename(file_path)}_{index}"]))
     return tagged_data
+'''
+#%%
+# Worker function to process a single CSV file
+def process_single_csv(file_path):
+    tagged_data = []
+    try:
+        df = pd.read_csv(file_path, quoting=csv.QUOTE_NONE, on_bad_lines='skip')
+
+        # Identify all columns of type 'object' (string)
+        text_columns = [col for col in df.columns if df[col].dtype == 'object']
+
+        if not text_columns:
+            print(f"No suitable text columns found in {file_path}. Skipping file.")
+            return tagged_data
+
+        print(f"Using columns {text_columns} from {file_path}")
+        for index, row in df.iterrows():
+            tokens = []
+            for col in text_columns:
+                column_data = row[col]
+                # Safely evaluate the string if it looks like a list, otherwise split normally
+                column_tokens = ast.literal_eval(column_data) if (isinstance(column_data, str) and column_data.startswith('[') and column_data.endswith(']')) else str(column_data).split()
+                tokens.extend(column_tokens)
+            tagged_data.append(TaggedDocument(words=tokens, tags=[f"{os.path.basename(file_path)}_{index}"]))
+    except Exception as e:
+        print(f"Error processing file {file_path}: {e}")
+    return tagged_data
+
+# Process all CSV files in the directory using multiprocessing
+def process_csv_files(directory):
+    files = [os.path.join(directory, filename) for filename in os.listdir(directory) if filename.endswith(".csv")]
+    
+    # Initialize a pool of worker processes
+    with Pool(os.cpu_count()) as p:
+        results = p.map(process_single_csv, files)
+
+    # Flatten the list of tagged_data lists into a single list
+    tagged_data = [item for sublist in results for item in sublist]
+    return tagged_data
 
 #%%
 # Directory paths
@@ -116,20 +162,22 @@ d2v_directory = os.path.join(directory, 'd2v')
 os.makedirs(d2v_directory, exist_ok=True)
 # Initialize tagged data list
 tagged_data = []
+
 # Process the all text file that ends with .txt in the directory preprocess under knowledge folder
 tagged_data.extend(process_text_file(directory))
+
 # Process all CSV files in the preprocess directory of knowledge folder
 tagged_data.extend(process_csv_files(directory))
 
+
 #%%
-# Train the Doc2Vec model for txt and csv files of knowledge folder
-model_d2v_combined = Doc2Vec(vector_size=100, alpha=0.025, min_alpha=0.00025, min_count=1, dm=0, workers=multiprocessing.cpu_count(), epochs=100)
+# Train the Doc2Vec model for txt and csv files of knowledge folder using GPU
+model_d2v_combined = Doc2Vec(vector_size=300, alpha=0.025, min_alpha=0.00025, min_count=2, dm=0, workers=multiprocessing.cpu_count(), epochs=10)
 model_d2v_combined.build_vocab(tagged_data)
 model_d2v_combined.train(tagged_data, total_examples=model_d2v_combined.corpus_count, epochs=model_d2v_combined.epochs)
 
-# Save the model of both text file and csv file from preprocess directory of knowledge
+# Save the model of knowledge folder
 model_d2v_combined.save(os.path.join(d2v_directory, 'model_d2v_combined.model'))
-
 # %%
 # Directory paths for sample_q_and_a files
 directory = "../data/sample_q_and_a/preprocess"
@@ -152,11 +200,10 @@ model_d2v_qa.save(os.path.join(d2v_directory, 'model_d2v_qa.model'))
 # %%
 # view the model_d2v_qa.model file
 for i in range(10):
-    print(model_d2v_qa.docvecs[i])
+    print(model_d2v_combined.docvecs[i])
 
 #%%
 #check the model_d2v_qa.model file for any word
 for i in range(10):
-    print(model_d2v_qa.wv.index_to_key[i])
+    print(model_d2v_combined.wv.index_to_key[i])
     
-
