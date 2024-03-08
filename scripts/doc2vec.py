@@ -172,7 +172,7 @@ tagged_data.extend(process_csv_files(directory))
 
 #%%
 # Train the Doc2Vec model for txt and csv files of knowledge folder using GPU
-model_d2v_combined = Doc2Vec(vector_size=100, alpha=0.025, min_alpha=0.00025, min_count=4, dm=0, workers=multiprocessing.cpu_count(), epochs=50)
+model_d2v_combined = Doc2Vec(vector_size=300, alpha=0.025, min_alpha=0.00025, min_count=2, dm=0, workers=multiprocessing.cpu_count(), epochs=10)
 model_d2v_combined.build_vocab(tagged_data)
 model_d2v_combined.train(tagged_data, total_examples=model_d2v_combined.corpus_count, epochs=model_d2v_combined.epochs)
 
@@ -200,13 +200,10 @@ model_d2v_qa.save(os.path.join(d2v_directory, 'model_d2v_qa.model'))
 # %%
 # view the model_d2v_qa.model file
 for i in range(10):
-    print(model_d2v_qa.docvecs[i])
+    print(model_d2v_combined.docvecs[i])
 
 #%%
 #check the model_d2v_qa.model file for any word
 for i in range(10):
-    print(model_d2v_qa.wv.index_to_key[i])
+    print(model_d2v_combined.wv.index_to_key[i])
     
-
-
-# %%
