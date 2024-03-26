@@ -87,4 +87,17 @@ print(f"The answer is: {answer}")
 answer = answer.reshape(-1)
 answer_text = knowledge_model.wv.most_similar(positive=[answer], topn=1)
 print(f"The answer is: {answer_text}")
+#%%
+def find_similar(question):
+    # Infer a vector for the question using the standard model
+    question_vector = standard_model.infer_vector([question])
+
+    # Find the most similar vectors in the knowledge model
+    similar = knowledge_model.docvecs.most_similar([question_vector], topn=1)
+
+    return similar
+
+# Test the function
+question = "What is mental health?"
+print(find_similar(question))
 # %%

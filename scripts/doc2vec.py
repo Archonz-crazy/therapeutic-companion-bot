@@ -190,7 +190,7 @@ tagged_data.extend(process_csv_files(directory))
 
 #%%
 # Train the Doc2Vec model for sample_q_and_a folder
-model_d2v_qa = Doc2Vec(vector_size=100, alpha=0.025, min_alpha=0.00025, min_count=1, dm=0, workers=multiprocessing.cpu_count(), epochs=100)
+model_d2v_qa = Doc2Vec(vector_size=300, alpha=0.025, min_alpha=0.00025, min_count=1, dm=0, workers=multiprocessing.cpu_count(), epochs=100)
 model_d2v_qa.build_vocab(tagged_data)
 model_d2v_qa.train(tagged_data, total_examples=model_d2v_qa.corpus_count, epochs=model_d2v_qa.epochs)
 # Save the model of sample_q_and_a folder
@@ -207,3 +207,4 @@ for i in range(10):
 for i in range(10):
     print(model_d2v_combined.wv.index_to_key[i])
     
+# %%
