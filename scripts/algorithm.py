@@ -1,9 +1,11 @@
 #%%
+import numpy as np
 import gensim
 from gensim.models.doc2vec import Doc2Vec
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Embedding, LSTM, Dense
+import os
 #%%
 def is_knowledge_based(question, knowledge_model, standard_model):
     """
@@ -41,13 +43,61 @@ classification = classify_question(question, knowledge_model, standard_model)
 # Display the classification
 print(f"The question is a {classification} question.")
 
+
 #%%
-#predict the answer from the knowledge or sample_q_and_a corpus and based on classification 
-# and predict the answer using RNN and LSTM model
-def predict_answer(question, classification, knowledge_model, standard_model):
-    if classification == "knowledge-based":
-        # Use the knowledge model to predict the answer
-        most_similar_vector = knowledge_model.docvecs.most_similar(0)
-        answer = most_similar_vector[0][0]
-        return answer
-        
+# Convert the question into a sequence of word embeddings
+question_sequence = knowledge_model.infer_vector(question.split())
+
+# Reshape the question sequence to match the input shape of the LSTM model
+question_sequence = np.reshape(question_sequence, (1, question_sequence.shape[0], 1))
+
+# Create a folder called "model" in the "data" directory
+model_dir = "../data/model"
+os.makedirs(model_dir, exist_ok=True)
+
+# Load the LSTM model
+lstm_model = Sequential()
+lstm_model.add(LSTM(200, input_shape=(question_sequence.shape[1], 1)))
+lstm_model.add(Dense(600, activation='sigmoid'))
+lstm_model.add(Dense(500, activation='sigmoid'))
+lstm_model.add(Dense(400, activation='sigmoid'))
+lstm_model.add(Dense(300, activation='sigmoid'))
+lstm_model.add(Dense(200, activation='sigmoid'))
+lstm_model.add(Dense(100, activation='sigmoid'))
+lstm_model.add(Dense(50, activation='sigmoid'))
+lstm_model.add(Dense(1, activation='sigmoid'))
+
+lstm_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+# Save the LSTM model weights to the "model.h5" file in the "model" directory
+lstm_model.save(os.path.join(model_dir, "lstm_model.h5"))
+
+# Load the weights of the LSTM model from the standard_model
+lstm_model.load_weights(os.path.join(model_dir, "lstm_model.h5"))
+
+#fit the model
+lstm_model.fit(question_sequence, np.array([0]), epochs=20, batch_size=1)
+# Generate the answer using the LSTM model
+answer = lstm_model.predict(question_sequence)
+
+# Display the answer
+print(f"The answer is: {answer}")
+# %%
+#decode the answer to text
+answer = answer.reshape(-1)
+answer_text = knowledge_model.wv.most_similar(positive=[answer], topn=1)
+print(f"The answer is: {answer_text}")
+#%%
+def find_similar(question):
+    # Infer a vector for the question using the standard model
+    question_vector = standard_model.infer_vector([question])
+
+    # Find the most similar vectors in the knowledge model
+    similar = knowledge_model.docvecs.most_similar([question_vector], topn=1)
+
+    return similar
+
+# Test the function
+question = "What is mental health?"
+print(find_similar(question))
+# %%
