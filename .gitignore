@@ -1,4 +1,26 @@
 /data
 scripts/__pycache__
-.gitattributes
+/home/ubuntu/therapeutic-companion-bot/scripts/logs
+/home/ubuntu/therapeutic-companion-bot/scripts/multi-class-logs
+/home/ubuntu/therapeutic-companion-bot/scripts/misc_models/tf_model/data.pickle
+/home/ubuntu/therapeutic-companion-bot/scripts/misc_models/tf_model/MentalHealt$
+therapeutic-companion-bot/scripts/misc_models/tf_model/MentalHealthChatBotmodel$
+/home/ubuntu/therapeutic-companion-bot/scripts/misc_models/tf_model/MentalHealt$
 
+scripts/logs/events.out.tfevents.1712011547.ip-10-0-2-210.5775.0
+scripts/logs/events.out.tfevents.1712012275.ip-10-0-2-210.5775.1
+scripts/logs/events.out.tfevents.1712195426.ip-10-0-2-41.3402.0
+scripts/logs/events.out.tfevents.1712206716.ip-10-0-2-41.4851.0
+scripts/logs/events.out.tfevents.1712207140.ip-10-0-2-41.4851.1
+scripts/logs/events.out.tfevents.1712242496.ip-10-0-2-41.4851.2
+scripts/logs/events.out.tfevents.1712242970.ip-10-0-2-41.36789.0
+scripts/logs/events.out.tfevents.1712243136.ip-10-0-2-41.36902.0
+scripts/logs/events.out.tfevents.1712261242.ip-10-0-2-41.36902.1
+/scripts/logs
+scripts/misc_models/tf_model/MentalHealthChatBotmodel.tflearn.data-00000-of-00001
+scripts/misc_models/tf_model/MentalHealthChatBotmodel.tflearn.index
+scripts/misc_models/tf_model/MentalHealthChatBotmodel.tflearn.meta
+scripts/multi-class-logs/events.out.tfevents.1711570899.ip-10-0-2-151.10000.0
+/scripts/multi-class-logs
+scripts/misc_models/tf_model/data.pickle
+scripts/misc_models/tf_model/MentalHealthChatBotmodel.tflearn
