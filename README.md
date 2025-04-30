@@ -1,16 +1,61 @@
 # Therapeutic Companion Bot
 
+A chatbot designed to provide conversational support and resources for mental health, leveraging advanced Natural Language Processing (NLP) and curated datasets from trusted sources.
+
+---
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Features](#features)
+- [Data Collection](#data-collection)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Resume Pointers](#resume-pointers)
+
+---
+
 ## Introduction
 
-In this project, we tried to build a chatbot using Natural Language Processing(NLP). 
+**Therapeutic Companion Bot** is an open-source chatbot project focused on mental health support. It utilizes NLP techniques to engage users in meaningful conversations, answer questions, and provide guidance based on data from reputable sources. The bot is designed with ethical considerations in mind, following best practices for responsible AI in mental health contexts.
 
-## Collectioon
+---
 
-First, we scraped data from the following sources:
+## Features
 
-* Reddit - We scraped all the mental health subreddits containing the subreddit name, the questions asked, and all the comments added in the Response column.
-* WHO (World Health Organization) — We scraped the ethical rules for creating a mental health chatbot here. This data is used to write guardrails for the models.
-* HuggingFace - This data is a processed Question and Answer dataset between a psychiatrist and a patient.
+- Conversational AI for mental health support
+- Data-driven responses sourced from real mental health discussions
+- Ethical guardrails based on World Health Organization (WHO) guidelines
+- Multi-format data ingestion (.csv, .parquet, .txt, .json)
+- Scalable architecture for large datasets (5GB+)
 
-* The data was around 5GB and in various formats, such as .csv, .parquet, .txt, and .json.
+---
+
+## Data Collection
+
+The bot's knowledge base is built from:
+
+- **Reddit:** Scraped mental health subreddits, including subreddit names, user questions, and community responses.
+- **World Health Organization (WHO):** Ethical guidelines for mental health chatbots, used to implement conversational guardrails.
+- **HuggingFace:** Processed Q&A datasets simulating psychiatrist-patient interactions.
+
+All data was collected and processed into multiple formats to ensure flexibility and scalability.
+
+---
+
+## Tech Stack
+
+- **Programming Language:** Python
+- **NLP Libraries:** (e.g., HuggingFace Transformers, NLTK, spaCy)
+- **Data Handling:** Pandas, NumPy
+- **Scraping Tools:** Requests, BeautifulSoup, etc.
+
+---
+
+## Installation
+
+1. Clone the repository:
 
