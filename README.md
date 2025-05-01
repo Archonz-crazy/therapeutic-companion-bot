@@ -1,3 +1,4 @@
+
 # Therapeutic Companion Bot
 
 A chatbot designed to provide conversational support and resources for mental health, leveraging advanced Natural Language Processing (NLP) and curated datasets from trusted sources.
@@ -14,7 +15,6 @@ A chatbot designed to provide conversational support and resources for mental he
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
-- [Resume Pointers](#resume-pointers)
 
 ---
 
@@ -58,4 +58,37 @@ All data was collected and processed into multiple formats to ensure flexibility
 ## Installation
 
 1. Clone the repository:
+   ```
+   git clone https://github.com/Archonz-crazy/therapeutic-companion-bot.git
+   cd therapeutic-companion-bot
+   ```
+2. Install dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
+3. Prepare datasets in the required directories and formats.
+
+---
+
+## Usage
+
+1. Run the main chatbot script:
+   ```
+   python main.py
+   ```
+2. Interact with the chatbot via the command line or configured interface.
+
+---
+
+## Contributing
+
+Contributions are welcome! Please open issues or submit pull requests for improvements, bug fixes, or new features. Ensure your contributions align with the project's ethical guidelines for mental health support.
+
+---
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
 
